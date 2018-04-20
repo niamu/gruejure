@@ -33,10 +33,10 @@
 
 (defn -main
   []
-  (load-story "resources/hhgg.z3"))
+  (load-story "resources/zork.dat"))
 
 #_(zmem/version)
-#_@zstory/story
-#_@zstory/frame
+@zstory/story
+@zstory/frame
 
 #_(zins/execute-instruction (zins/read-instruction))

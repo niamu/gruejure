@@ -2,16 +2,6 @@
   #?(:clj (:require [clojure.java.io :as io]))
   #?(:clj (:import [java.io ByteArrayOutputStream])))
 
-;; Header addresses
-(def header-main-address 0x06)
-(def header-dictionary-table 0x08)
-(def header-object-table 0x0a)
-(def header-global-variable-table 0xc)
-(def header-abbreviations-table 0x18)
-(def header-routine-offset 0x28)
-(def header-string-offset 0x2a)
-(def header-alphabet-address 0x34)
-
 #?(:clj
    (defn file->bytes [file]
      (with-open [xin (io/input-stream file)
@@ -45,6 +35,7 @@
 
 (defn signed-word
   [word]
+  (prn "signed word... " word)
   (if (bit-test word 15)
     (- word 0x10000)
     word))

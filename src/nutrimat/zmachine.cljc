@@ -77,8 +77,7 @@
   (count (:locals @zstory/frame)))
 
 (defn local [n]
-  (and (contains? (:locals @zstory/frame) n)
-       (nth (:locals @zstory/frame) n)))
+  (nth (:locals @zstory/frame) n))
 
 (defn set-local [n value]
   (swap! zstory/frame assoc-in [:locals] n value))
@@ -109,6 +108,7 @@
         :else (get-global-variable (- var 0x10))))
 
 (defn set-variable [var value]
+  (prn "setting variable..." var value)
   (cond (= var 0x0) (stack-push value)
         (<= 0x1 var 0xf) (set-local (dec var) value)
         :else (set-global-variable (- var 0x10) value)))
@@ -152,9 +152,8 @@
    (when (= (count (:frames @zstory/story)) 1)
      (util/error "Illegal return from main routine"))
    (frame-pop)
-   (let [result-store (:result-store @zstory/story)]
-     (when result-store
-       (set-variable result-store result)))))
+   (when-let [result-store (:result-store @zstory/story)]
+     (set-variable result-store result))))
 
 (defn return-true [] (routine-return 1))
 (defn return-false [] (routine-return 0))

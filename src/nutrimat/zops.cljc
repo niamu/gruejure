@@ -4,13 +4,18 @@
             [nutrimat.zio :as zio]
             [nutrimat.zmachine :as zmachine]
             [nutrimat.zmem :as zmem]
-            [nutrimat.zobj :as zobj]))
+            [nutrimat.zobj :as zobj]
+            [nutrimat.zstring :as zstring]))
 
 (defn op-call [ops store]
   (let [address (zmem/routine-address (zins/get-operand-value (ops 0)))]
     (zmachine/call-routine address
                            (vec (map zins/get-operand-value (rest ops)))
                            store)))
+
+(defop je :op2 0 nil #{:branch} ""
+  [ops store branch text]
+  nil)
 
 (defop je :op2 1 nil #{:branch} "je a b ?(label)"
   [ops store branch text]
@@ -203,7 +208,12 @@
   (let [var (second (ops 0))]
     (zmachine/dec-variable var)))
 
-(defop print_addr :op1 7 nil #{} "print_addr byte-address-of-string")
+(defop print_addr :op1 7 nil #{} "print_addr byte-address-of-string"
+  [ops store branch text]
+  (-> (zins/get-operand-value (ops 0))
+      zmem/string-address
+      zstring/read-string-from
+      zio/zprint))
 
 (defop call_1s :op1 8 [4 5 6 7 8] #{:store} "call_1s routine -> (result)"
   [ops store branch text]
@@ -231,7 +241,7 @@
 (defop print_paddr :op1 13 nil #{} "print_paddr packed-address-of-string"
   [ops store branch text]
   (zio/zprint
-   (read-string (zmem/string-address (zins/get-operand-value (ops 0))))))
+   (zstring/read-string (zmem/string-address (zins/get-operand-value (ops 0))))))
 
 (defop load :op1 14 nil #{:store} "load (variable) -> (result)")
 
